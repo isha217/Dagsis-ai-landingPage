@@ -3,7 +3,9 @@
 import Lenis from "lenis";
 import { useEffect } from "react";
 import { useReducedMotion } from "@/hooks/useMediaQuery";
-import { ANCHOR_OFFSET, setLenis } from "@/lib/smooth-scroll";
+
+/** Offset applied to anchor jumps so headings clear the floating navbar. */
+const ANCHOR_OFFSET = -96;
 
 /**
  * Inertial smooth scrolling (Lenis), as used on youratlas and joinboardly.
@@ -23,11 +25,7 @@ export function SmoothScroll() {
       lerp: 0.1,
       anchors: { offset: ANCHOR_OFFSET },
     });
-    setLenis(lenis);
-    return () => {
-      setLenis(null);
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, [reduced]);
 
   return null;

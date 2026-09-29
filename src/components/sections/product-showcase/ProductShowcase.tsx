@@ -2,11 +2,11 @@
 
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useRef, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { showcaseIntro, showcaseTabs, showcaseTour } from "@/content";
 import type { ShowcaseTab } from "@/types/content";
 import { clamp01, useScrollProgress } from "@/hooks/useScrollProgress";
-import { useMediaQuery, useReducedMotion } from "@/hooks/useMediaQuery";
+import { useReducedMotion } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { ButtonLink, Container, SectionHeader } from "@/components/ui";
 import { Reveal } from "@/components/shared/Reveal";
@@ -135,12 +135,35 @@ function TourCard({
  * blurs away and the incoming one sharpens. A counter and progress line run
  * along the bottom.
  *
- * Mobile / short screens / reduced motion: a simple vertical list.
+ * Every screen size gets the same animation: the card size is worked out
+ * from the stage's real width AND height (ResizeObserver), and all poses
+ * scale with the card, so phones, laptops and 4K monitors look alike. On
+ * narrow screens the card is centred and the next one peeks in from the
+ * right. Only reduced-motion visitors get a simple vertical list.
  */
+
+/** Card width the poses were tuned at (48% of a 1440px stage). */
+const BASE_CARD = 691;
+/** Space reserved under the image for the title + meta line, in px. */
+const titleBlock = (wide: boolean) => (wide ? 100 : 104); // room for the title + meta line
+
+/** Stage size in px, kept up to date. */
+function useSize(ref: RefObject<HTMLElement | null>, active: boolean) {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !active) return;
+    const ro = new ResizeObserver(([entry]) =>
+      setSize({ w: entry.contentRect.width, h: entry.contentRect.height }),
+    );
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref, active]);
+  return size;
+}
 export function ProductShowcase() {
-  const pinnable = useMediaQuery("(min-width: 1024px) and (min-height: 700px)");
   const reduced = useReducedMotion();
-  const pinned = pinnable && !reduced;
+  const pinned = !reduced;
 
   // On the section itself so it exists in both layouts (the hook attaches once).
   const outerRef = useRef<HTMLElement>(null);
@@ -150,8 +173,25 @@ export function ProductShowcase() {
   const activeIndex = Math.min(count - 1, Math.round(position));
   const transition = Math.min(count - 2, Math.floor(position));
 
-  // Same header and buttons as every other section.
+  const stageRef = useRef<HTMLDivElement>(null);
+  const stage = useSize(stageRef, pinned);
+  const wide = stage.w >= 768;
+  // Largest 16:9 card that fits both the width and the height of the stage.
+  const cardW = Math.max(
+    0,
+    Math.min(stage.w * (wide ? 0.56 : 0.9), ((stage.h - titleBlock(wide)) * 16) / 9),
+  );
+  const cardH = (cardW * 9) / 16 + titleBlock(wide);
+  const k = cardW / BASE_CARD; // pose scale
+  const cardLeft = wide ? stage.w * 0.44 - cardW / 2 : (stage.w - cardW) / 2;
+  // Wide: slightly above centre (room for the next card top-right). Narrow: centred.
+  const cardTop = Math.max(0, (stage.h - cardH) * (wide ? 0.35 : 0.5));
+
+  // Same header and buttons as every other section. While pinned the header
+  // is just label + title, so the card gets the height (the full header with
+  // description is used in the reduced-motion list).
   const header = <SectionHeader {...showcaseIntro} />;
+  const pinnedHeader = <SectionHeader {...showcaseIntro} description={undefined} />;
 
   const ctas = (
     <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -190,26 +230,30 @@ export function ProductShowcase() {
         className="relative bg-surface"
         style={{ height: `${100 + (count - 1) * VH_PER_STEP * 100}vh` }}
       >
-        <div className="sticky top-0 flex h-screen flex-col overflow-hidden pt-24 pb-6">
-          <Container>{header}</Container>
+        <div className="sticky top-0 flex h-svh flex-col overflow-hidden pt-20 pb-4 sm:pt-22 sm:pb-5">
+          <Container>{pinnedHeader}</Container>
 
           {/* Stage: cards in perspective */}
-          <div className="relative flex-1" style={{ perspective: "86vw" }}>
-            {transition >= 0 && <TourBubble note={showcaseTabs[transition + 1].note} t={position - transition} />}
+          <div ref={stageRef} className="relative mt-5 mb-3 min-h-0 flex-1 sm:mt-6" style={{ perspective: `${1238 * k}px` }}>
+            {transition >= 0 && cardW > 0 && (
+              <TourBubble note={showcaseTabs[transition + 1].note} t={position - transition} compact={!wide} />
+            )}
 
-            {showcaseTabs.map((tab, i) => {
+            {cardW > 0 && showcaseTabs.map((tab, i) => {
               const p = i - position;
               if (p < -1.05 || p > 2.5) return null;
               const pose = poseAt(p);
-              // Poses were measured on a 1440px-wide stage; scale with the viewport.
-              const px = (v: number) => `calc(${v} * 100vw / 1440)`;
+              const px = (v: number) => `${v * k}px`;
               const titleOn = clamp01(1 - Math.abs(p) * 3);
               return (
                 <article
                   key={tab.id}
-                  className="absolute top-[5%] left-[20%] w-[48%] will-change-transform"
+                  className="absolute will-change-transform"
                   aria-hidden={i !== activeIndex}
                   style={{
+                    top: cardTop,
+                    left: cardLeft,
+                    width: cardW,
                     zIndex: Math.round(1000 - p * 100),
                     opacity: pose.o,
                     transform: `translate3d(${px(pose.tx)}, ${px(pose.ty)}, ${px(pose.tz)}) rotateY(${pose.ry}deg) rotateZ(${pose.rz}deg)`,
@@ -227,7 +271,7 @@ export function ProductShowcase() {
           </div>
 
           {/* Footer: counter + progress line, scroll hint */}
-          <Container className="relative z-[2000] grid grid-cols-3 items-center text-sm text-ink-500">
+          <Container className="relative z-[2000] flex items-center justify-between text-sm text-ink-500 sm:grid sm:grid-cols-3">
             <div className="flex items-center gap-3">
               <span className="text-lg font-semibold text-ink-900 tabular-nums">{pad(activeIndex + 1)}</span>
               <span className="h-1 w-24 overflow-hidden rounded-full bg-ink-200">
@@ -239,10 +283,10 @@ export function ProductShowcase() {
               <span className="tabular-nums">{pad(count)}</span>
             </div>
             <p className="flex items-center justify-center gap-2">
-              {showcaseTour.scrollHint}
+              <span className="max-sm:hidden">{showcaseTour.scrollHint}</span>
               <ArrowDown className="size-4 text-brand-600 dark:text-brand-400" />
             </p>
-            <span />
+            <span className="max-sm:hidden" />
           </Container>
         </div>
       </section>

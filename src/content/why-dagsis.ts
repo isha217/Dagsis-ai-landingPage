@@ -54,3 +54,30 @@ export const whyCta = {
   description: "Launch your first agent today and see the difference this week.",
   label: "Start for Free",
 };
+
+/**
+ * Copy shown inside the Why Dagsis illustrations
+ * (components/sections/why-dagsis/WhyVisuals.tsx). Figures are illustrative;
+ * replace with real numbers when available.
+ */
+export const whyVisuals = {
+  knowledge: {
+    question: "Can I return items I bought on sale?",
+    answer: "Yes, within 14 days, as long as the tags are still attached. Want me to start a return?",
+    source: "Returns policy.docx · section 3",
+    badge: "Answered from your docs",
+  },
+  alwaysOn: {
+    /** Hours of the day (0–24) with a conversation dot on the timeline. */
+    conversationHours: [1.2, 3.2, 5.6, 8.4, 11, 13.6, 16.2, 18.8, 21.2, 23],
+    example: { time: "03:12", question: "Is my order shipped?", result: "answered in 2s" },
+  },
+  speed: {
+    agent: { label: "Dagsis agent", value: "2s" },
+    human: { label: "Typical email reply", value: "12h" },
+  },
+  setup: {
+    steps: ["Upload your docs", "Choose a tone", "Go live"],
+    doneLabel: "Live",
+  },
+};

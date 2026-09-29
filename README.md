@@ -30,16 +30,16 @@ src/
 ├── content/                    # ALL page copy, one file per section (edit text here)
 ├── types/content.ts            # TypeScript shapes for all content
 ├── hooks/
+│   ├── useFitScale.ts          # scale a pinned layout down to fit short windows
 │   ├── useScrollProgress.ts    # 0→1 scroll progress of an element (+ lerp/range/easeOut)
 │   ├── useInView.ts            # true once an element is on screen
 │   └── useMediaQuery.ts        # media queries, useReducedMotion()
 ├── lib/
 │   ├── utils.ts                # cn() class merger, formatPrice()
-│   ├── theme.ts                # theme storage key, no-flash script, applyTheme()
-│   └── smooth-scroll.ts        # Lenis handle + scrollToY()
+│   └── theme.ts                # theme storage key, no-flash script, applyTheme()
 └── components/
     ├── ui/                     # Generic building blocks (no business copy)
-    │   Button, Container, Section, SectionHeader, Eyebrow, IconBadge
+    │   Button, Container, Section, SectionHeader, Eyebrow
     ├── layout/                 # Navbar, Footer, SmoothScroll
     ├── shared/                 # Reusable visuals + motion primitives:
     │   RobotAvatar, BrowserFrame, ChatBubble, BrandIcons, Logo (official Dagsis.ai artwork),
@@ -83,7 +83,7 @@ design/brand/Final Dagsis Logo/                         # ORIGINAL logo artwork 
 
 ## Light & dark theme
 
-A sun/moon button in the navbar switches themes. The first visit follows the visitor's OS setting, and the choice is saved in `localStorage` (`dagsis-theme`).
+A sun/moon button in the navbar switches themes. **Light is the default** for first-time visitors (the OS setting is ignored); a visitor's choice is saved in `localStorage` (`dagsis-theme`).
 
 | Piece | File |
 |-------|------|
@@ -128,11 +128,11 @@ Motion follows the reference sites (mostly built in Framer, with Lenis smooth sc
 |---------|--------|-----------|------------|
 | Whole page | Inertial smooth scrolling | youratlas, joinboardly | `layout/SmoothScroll.tsx` (Lenis) |
 | Hero | Headline words rise in one by one; agent panel plays sample chats (question → typing → answer) | youratlas | CSS `animate-word-in`, `HeroAgentCard` |
-| Problem | As the section arrives the left column builds in from the left: accent line + label, headline word by word (slide + un-blur), description, then a "Support inbox" illustration. The section then pins: problem cards slide in from the right while matching inbox rows slide in from the left, and the unanswered counter / waiting timer climb with scroll. Mobile: heading and inbox from the left, cards from the right | joinboardly / Intercom-style scroll storytelling | `Problem` (`enter` + `pin`), `ProblemInbox`, `ProblemItem`, content in `content/problem.ts` (`problemInbox`) |
+| Problem | Animated on every screen size. Wide screens: heading builds in from the left (label, headline word by word, description, "Support inbox"), then the section pins; problem cards slide in from the right while matching inbox rows arrive and the counters climb. Short windows scale the pinned layout to fit (`useFitScale`). Phones/tablets: heading from the left, cards slide in from the right onto a stack, 01/04 bar below | joinboardly / Intercom-style scroll storytelling | `Problem`, `ProblemInbox`, `ProblemItem`, `hooks/useFitScale` |
 | Use cases | Sticky cards that stack while scrolling (big gradient numerals, WhatsApp chat per use case); covered cards shrink and dim | cevver | `UseCases` + `useScrollProgress` |
 | Video | Player grows to full size as it arrives | Framer sites | `VideoSection` |
 | Features | Frosted cards on logo-colour gradients alternate with a product scene per feature. Ticker glides left at 25 px/s, eases to 10% speed on hover, drag / sideways-scroll to browse (measured from the reference) | dagis.framer.website | `Marquee` |
-| Product tour | Section pins; each scroll step swings the active 16:9 card out to the left in 3D while the next turns in from top-right; a Dagsis bubble types then confirms the next stop; titles blur in/out. The front card is a link (↗ button on the image + ↗ on the title; hover zooms the image and fills the button blue); set `href` per tab in `content/showcase.ts` (default: Book a Demo) | anubi.io | `ProductShowcase`, `TourBubble` |
+| Product tour | Works the same on every screen size (card sized from the stage's real width and height; on phones it's centred with the next card peeking in). Section pins; each scroll step swings the active 16:9 card out to the left in 3D while the next turns in from top-right; a Dagsis bubble types then confirms the next stop; titles blur in/out. The front card is a link (↗ button on the image + ↗ on the title; hover zooms the image and fills the button blue); set `href` per tab in `content/showcase.ts` (default: Book a Demo) | anubi.io | `ProductShowcase`, `TourBubble` |
 | Deploy | Pills pop in; dots travel along the connectors; arc rotates round the orb | youratlas | `ChannelHub` (SVG `animateMotion`) |
 | Why Dagsis | Cards stagger in; each illustration plays once in view (bubbles appear, timeline dots pop, reply bars grow, checklist ticks); cards lift on hover | – | `WhyDagsis`, `WhyVisuals` |
 | Testimonial | Quote brightens word by word | joinboardly | `ScrollRevealText` |

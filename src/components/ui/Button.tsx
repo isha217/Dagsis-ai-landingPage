@@ -2,14 +2,12 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "brand" | "secondary" | "ghost" | "white" | "outline-light";
+type Variant = "primary" | "secondary" | "ghost" | "white" | "outline-light";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   /** Main call to action: the logo blue, in both themes. */
   primary: "bg-brand-600 text-white hover:bg-brand-700",
-  /** Alias of primary, kept for readability where "brand" is the intent. */
-  brand: "bg-brand-600 text-white hover:bg-brand-700",
   secondary: "bg-surface-raised text-ink-900 ring-1 ring-ink-200 hover:bg-ink-50 hover:ring-ink-300",
   ghost: "text-ink-700 hover:bg-ink-100 hover:text-ink-900",
   /** Always white, for use on fixed dark / coloured backgrounds. */

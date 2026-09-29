@@ -4,6 +4,10 @@
    the no-flash script in layout.tsx), not the OS media query. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* `short:` = short browser windows (laptops at 125–150% zoom, small screens).
+   Used to tighten sections that would otherwise overflow one screen. */
+@custom-variant short (@media (max-height: 800px));
+
 /* ----------------------------------------------------------------------------
  * Theme values
  *
@@ -117,14 +121,11 @@
   --color-night-950: #0c1a40;
 
   --animate-float: float 6s ease-in-out infinite;
-  --animate-float-delayed: float 6s ease-in-out 1.5s infinite;
   --animate-blink: blink 4s ease-in-out infinite;
   --animate-typing: typing 1.2s ease-in-out infinite;
   --animate-dash: dash 1.2s linear infinite;
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-word-in: word-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  --animate-line-y: line-y 5s linear infinite;
-  --animate-line-x: line-x 6s linear infinite;
   --animate-spin-slow: spin 10s linear infinite;
 
   @keyframes float {
@@ -145,15 +146,6 @@
   @keyframes word-in {
     from { opacity: 0; transform: translateY(0.35em); filter: blur(8px); }
     to { opacity: 1; transform: none; filter: blur(0); }
-  }
-  /* Glowing dot travelling along grid lines (joinboardly) */
-  @keyframes line-y {
-    from { top: -15%; }
-    to { top: 115%; }
-  }
-  @keyframes line-x {
-    from { left: -15%; }
-    to { left: 115%; }
   }
   @keyframes typing {
     0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
@@ -246,11 +238,6 @@ html.theme-transition *::after {
   block-size: auto;
 }
 
-/* Showcase auto-advance progress bar (components/sections/product-showcase) */
-@keyframes showcase-progress {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

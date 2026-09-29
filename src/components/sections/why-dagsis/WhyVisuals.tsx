@@ -2,7 +2,7 @@
 
 import { Check, FileText, Moon, ShieldCheck, Sun } from "lucide-react";
 import { useRef, type ReactNode } from "react";
-import { channels } from "@/content";
+import { channels, whyVisuals } from "@/content";
 import type { WhyReason } from "@/types/content";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
@@ -42,20 +42,20 @@ function KnowledgeVisual() {
       {(on) => (
         <>
           <div {...appear(on, 0)}>
-            <ChatBubble message={{ from: "user", text: "Can I return items I bought on sale?" }} className="ml-auto text-sm" />
+            <ChatBubble message={{ from: "user", text: whyVisuals.knowledge.question }} className="ml-auto text-sm" />
           </div>
           <div {...appear(on, 350)}>
             <ChatBubble
-              message={{ from: "agent", text: "Yes, within 14 days, as long as the tags are still attached. Want me to start a return?" }}
+              message={{ from: "agent", text: whyVisuals.knowledge.answer }}
               className="bg-surface-raised text-sm shadow-sm ring-1 ring-ink-200/70"
             />
           </div>
           <div {...appear(on, 750)} className={cn(appear(on, 750).className, "flex flex-wrap items-center gap-2")}>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-brand-100 dark:text-brand-300">
-              <FileText className="size-3.5" /> Returns policy.docx · section 3
+              <FileText className="size-3.5" /> {whyVisuals.knowledge.source}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-              <ShieldCheck className="size-3.5" /> Answered from your docs
+              <ShieldCheck className="size-3.5" /> {whyVisuals.knowledge.badge}
             </span>
           </div>
         </>
@@ -65,8 +65,8 @@ function KnowledgeVisual() {
 }
 
 function AlwaysOnVisual() {
-  // Conversation times across a day (hours), clustered through the night too.
-  const dots = [1.2, 3.2, 5.6, 8.4, 11, 13.6, 16.2, 18.8, 21.2, 23];
+  const dots = whyVisuals.alwaysOn.conversationHours;
+  const ex = whyVisuals.alwaysOn.example;
   return (
     <Stage className="flex h-40 flex-col justify-between">
       {(on) => (
@@ -93,7 +93,7 @@ function AlwaysOnVisual() {
             ))}
           </div>
           <p {...appear(on, 900)} className={cn(appear(on, 900).className, "text-xs text-ink-600")}>
-            <span className="font-mono font-semibold text-ink-900">03:12</span> · “Is my order shipped?” · answered in 2s
+            <span className="font-mono font-semibold text-ink-900">{ex.time}</span> · “{ex.question}” · {ex.result}
           </p>
         </>
       )}
@@ -103,8 +103,8 @@ function AlwaysOnVisual() {
 
 function SpeedVisual() {
   const rows = [
-    { label: "Dagsis agent", value: "2s", width: "8%", bar: "bg-brand-600 dark:bg-brand-400", strong: true },
-    { label: "Typical email reply", value: "12h", width: "100%", bar: "bg-ink-300", strong: false },
+    { ...whyVisuals.speed.agent, width: "8%", bar: "bg-brand-600 dark:bg-brand-400", strong: true },
+    { ...whyVisuals.speed.human, width: "100%", bar: "bg-ink-300", strong: false },
   ];
   return (
     <Stage className="flex h-40 flex-col justify-center gap-4">
@@ -163,7 +163,7 @@ function ChannelsVisual() {
 }
 
 function SetupVisual() {
-  const steps = ["Upload your docs", "Choose a tone", "Go live"];
+  const { steps, doneLabel } = whyVisuals.setup;
   return (
     <Stage className="flex h-40 flex-col justify-center gap-2.5">
       {(on) =>
@@ -187,7 +187,7 @@ function SetupVisual() {
                 )}
                 style={{ transitionDelay: "1400ms" }}
               >
-                Live
+                {doneLabel}
               </span>
             )}
           </div>

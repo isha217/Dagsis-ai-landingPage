@@ -11,7 +11,7 @@ import { LogoMark } from "@/components/shared/Logo";
  * @param note  status text for the incoming stop
  * @param t     progress through the transition, 0→1
  */
-export function TourBubble({ note, t }: { note: string; t: number }) {
+export function TourBubble({ note, t, compact = false }: { note: string; t: number; compact?: boolean }) {
   const appear = easeOut(range(t, 0.08, 0.3));
   const fade = 1 - range(t, 0.75, 0.95);
   const opacity = Math.min(appear, fade);
@@ -20,11 +20,11 @@ export function TourBubble({ note, t }: { note: string; t: number }) {
 
   return (
     <div
-      className="pointer-events-none absolute top-[14%] z-[1500]"
+      className={compact ? "pointer-events-none absolute top-0 left-1/2 z-[1500]" : "pointer-events-none absolute top-[14%] z-[1500]"}
       style={{
-        left: `${lerp(52, 34, t)}%`,
+        left: compact ? undefined : `${lerp(52, 34, t)}%`,
         opacity,
-        transform: `translateY(${lerp(16, 0, appear)}px) scale(${lerp(0.85, 1, appear)})`,
+        transform: `${compact ? "translateX(-50%) " : ""}translateY(${lerp(16, 0, appear)}px) scale(${lerp(0.85, 1, appear) * (compact ? 0.85 : 1)})`,
       }}
       aria-hidden="true"
     >

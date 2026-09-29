@@ -24,7 +24,7 @@ export function UseCaseChat({ messages }: { messages: ChatMessage[] }) {
       </div>
 
       {/* Messages */}
-      <div className="flex min-h-56 flex-col gap-2 bg-[#efeae2] p-4 dark:bg-[#0b141a]">
+      <div className="flex min-h-48 flex-col gap-2 bg-[#efeae2] p-3.5 dark:bg-[#0b141a]">
         <span className="mx-auto mb-1 rounded-md bg-white/90 px-2 py-0.5 text-[10px] text-[#54656f] shadow-sm dark:bg-[#182229] dark:text-[#8696a0]">
           Today
         </span>

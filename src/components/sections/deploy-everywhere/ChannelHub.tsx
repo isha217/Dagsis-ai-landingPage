@@ -44,11 +44,11 @@ export function ChannelHub() {
   const inView = useInView(ref, { threshold: 0.3 });
 
   return (
-    <div ref={ref} className="relative mx-auto grid max-w-5xl grid-cols-2 gap-3 md:block md:aspect-[1000/440]">
+    <div ref={ref} className="relative mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-3 lg:block lg:aspect-[1000/440]">
       {/* Connectors (desktop) */}
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="absolute inset-0 hidden size-full text-ink-300 md:block"
+        className="absolute inset-0 hidden size-full text-ink-300 lg:block"
         fill="none"
         aria-hidden="true"
       >
@@ -96,7 +96,7 @@ export function ChannelHub() {
       </svg>
 
       {/* Centre orb */}
-      <div className="col-span-2 mx-auto mb-6 md:absolute md:top-1/2 md:left-1/2 md:mb-0 md:-translate-x-1/2 md:-translate-y-1/2">
+      <div className="col-span-2 mx-auto mb-6 sm:col-span-3 lg:absolute lg:top-1/2 lg:left-1/2 lg:mb-0 lg:-translate-x-1/2 lg:-translate-y-1/2">
         <div className="relative flex size-36 items-center justify-center rounded-full bg-surface-raised shadow-xl shadow-black/10 ring-1 ring-ink-200 sm:size-44">
           <div
             className="absolute -inset-1 -z-10 animate-spin-slow rounded-full bg-[conic-gradient(from_200deg,transparent_0deg,#56bbf7_80deg,transparent_160deg,#3171f3_260deg,transparent_360deg)] opacity-60 blur-md"
@@ -114,10 +114,10 @@ export function ChannelHub() {
             key={c.id}
             title={c.description}
             className={cn(
-              "flex items-center justify-center gap-2.5 rounded-full bg-surface-raised px-4 py-3 shadow-lg shadow-black/5 ring-1 ring-ink-200/80 md:py-2.5",
+              "flex items-center justify-center gap-2.5 rounded-full bg-surface-raised px-4 py-3 shadow-lg shadow-black/5 ring-1 ring-ink-200/80 lg:py-2.5",
               "transition-[opacity,scale] duration-500 ease-out",
               inView ? "scale-100 opacity-100" : "scale-75 opacity-0",
-              "md:absolute md:top-[var(--y)] md:left-[var(--x)] md:-translate-x-1/2 md:-translate-y-1/2",
+              "lg:absolute lg:top-[var(--y)] lg:left-[var(--x)] lg:-translate-x-1/2 lg:-translate-y-1/2",
             )}
             style={
               {

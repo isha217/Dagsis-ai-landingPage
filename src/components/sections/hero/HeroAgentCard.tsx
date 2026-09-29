@@ -53,7 +53,7 @@ export function HeroAgentCard() {
       </div>
 
       {/* Avatar + live conversation */}
-      <div className="relative mx-auto mt-2 w-56 sm:w-60">
+      <div className="relative mx-auto mt-2 w-56 sm:w-60 lg:w-[min(15rem,26vh)]">
         <RobotAvatar idPrefix="hero-robot" />
 
         <div className="absolute top-6 -left-12 w-48 sm:-left-20" aria-live="polite">
@@ -80,7 +80,8 @@ export function HeroAgentCard() {
         {agentCard.samples.map((s, i) => {
           const active = i === index;
           return (
-            <li key={s.question}>
+            // On short windows show two samples so the card fits the screen.
+            <li key={s.question} className={i > 1 ? "lg:short:hidden" : undefined}>
               <button
                 type="button"
                 onClick={() => {
